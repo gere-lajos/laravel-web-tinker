@@ -1,6 +1,6 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker;
+namespace GereLajos\LaravelWebTinker;
 
 class LaravelWebTinker
 {

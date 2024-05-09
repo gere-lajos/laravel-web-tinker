@@ -1,6 +1,6 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker\Commands;
+namespace GereLajos\LaravelWebTinker\Commands;
 
 use Illuminate\Console\Command;
 

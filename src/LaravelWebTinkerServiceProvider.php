@@ -1,10 +1,10 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker;
+namespace GereLajos\LaravelWebTinker;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Gere Lajos\LaravelWebTinker\Commands\LaravelWebTinkerCommand;
+use GereLajos\LaravelWebTinker\Commands\LaravelWebTinkerCommand;
 
 class LaravelWebTinkerServiceProvider extends PackageServiceProvider
 {

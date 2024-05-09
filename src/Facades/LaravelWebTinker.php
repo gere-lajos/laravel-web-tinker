@@ -1,6 +1,6 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker\Facades;
+namespace GereLajos\LaravelWebTinker\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
@@ -11,6 +11,6 @@ class LaravelWebTinker extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Gere Lajos\LaravelWebTinker\LaravelWebTinker::class;
+        return \GereLajos\LaravelWebTinker\LaravelWebTinker::class;
     }
 }
