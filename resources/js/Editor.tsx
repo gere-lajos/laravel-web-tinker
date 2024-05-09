@@ -1,9 +1,19 @@
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { CardContent, Card } from "@/components/ui/card"
 import CodeIcon from "@/components/icons/CodeIcon"
 import PlayIcon from "@/components/icons/PlayIcon"
+import CodeMirror from '@uiw/react-codemirror';
+import { php } from '@codemirror/lang-php';
+import {githubDark} from '@uiw/codemirror-theme-github';
 
 export default function Editor() {
+    const [value, setValue] = useState("console.log('hello world!');");
+    const onChange = useCallback((val, viewUpdate) => {
+        console.log('val:', val);
+        setValue(val);
+    }, []);
+
     return (
         <div className="grid min-h-screen w-full grid-cols-[1fr_1fr]">
             <div className="flex flex-col border-r bg-gray-900 border-gray-800">
@@ -20,7 +30,7 @@ export default function Editor() {
                     </div>
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
-                    Almafa
+                    <CodeMirror value={value} height="100%" theme={githubDark} extensions={[php({  })]} onChange={onChange} className="h-full" />
                 </div>
             </div>
             <div className="flex flex-col">
