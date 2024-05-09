@@ -1,5 +1,5 @@
 <?php
 
-use Gere Lajos\LaravelWebTinker\Tests\TestCase;
+use GereLajos\LaravelWebTinker\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);

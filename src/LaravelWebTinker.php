@@ -2,6 +2,7 @@
 
 namespace GereLajos\LaravelWebTinker;
 
+use GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Collection;
@@ -9,15 +10,16 @@ use Laravel\Tinker\ClassAliasAutoloader;
 use Psy\Configuration;
 use Psy\ExecutionLoopClosure;
 use Psy\Shell;
-use GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 class LaravelWebTinker
 {
     /** @var \Symfony\Component\Console\Output\BufferedOutput */
     protected $output;
+
     /** @var \Psy\Shell */
     protected $shell;
+
     /** @var \GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier */
     protected $outputModifier;
 
@@ -49,7 +51,7 @@ class LaravelWebTinker
     {
         $config = new Configuration([
             'updateCheck' => 'never',
-            'configFile' => config('web-tinker.config_file') !== null ? base_path() . '/' . config('web-tinker.config_file') : null,
+            'configFile' => config('web-tinker.config_file') !== null ? base_path().'/'.config('web-tinker.config_file') : null,
         ]);
 
         $config->setHistoryFile(defined('PHP_WINDOWS_VERSION_BUILD') ? 'null' : '/dev/null');
@@ -75,16 +77,16 @@ class LaravelWebTinker
 
     public function removeComments(string $code): string
     {
-        $tokens = collect(token_get_all("<?php\n" . $code . '?>'));
+        $tokens = collect(token_get_all("<?php\n".$code.'?>'));
 
         return $tokens->reduce(function ($carry, $token) {
             if (is_string($token)) {
-                return $carry . $token;
+                return $carry.$token;
             }
 
             $text = $this->ignoreCommentsAndPhpTags($token);
 
-            return $carry . $text;
+            return $carry.$text;
         }, '');
     }
 

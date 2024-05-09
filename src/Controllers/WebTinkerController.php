@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace GereLajos\LaravelWebTinker\Controllers;
 
-use Illuminate\Http\Request;
 use GereLajos\LaravelWebTinker\LaravelWebTinker;
+use Illuminate\Http\Request;
 
 class WebTinkerController
 {

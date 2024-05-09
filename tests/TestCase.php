@@ -1,10 +1,10 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker\Tests;
+namespace GereLajos\LaravelWebTinker\Tests;
 
+use GereLajos\LaravelWebTinker\LaravelWebTinkerServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Gere Lajos\LaravelWebTinker\LaravelWebTinkerServiceProvider;
 
 class TestCase extends Orchestra
 {

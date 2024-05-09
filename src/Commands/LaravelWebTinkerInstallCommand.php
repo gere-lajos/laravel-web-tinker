@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 class LaravelWebTinkerInstallCommand extends Command
 {
     public $signature = 'laravel-web-tinker:install';
+
     public $description = 'Install the Laravel Web Tinker resources';
 
     public function handle()
