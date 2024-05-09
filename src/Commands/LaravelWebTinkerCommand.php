@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Gere Lajos\LaravelWebTinker\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelWebTinkerCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-web-tinker';
 
     public $description = 'My command';
 
