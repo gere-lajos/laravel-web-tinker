@@ -3,6 +3,7 @@
 namespace GereLajos\LaravelWebTinker;
 
 use GereLajos\LaravelWebTinker\Commands\LaravelWebTinkerInstallCommand;
+use GereLajos\LaravelWebTinker\Controllers\WebTinkerController;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -51,15 +52,9 @@ class LaravelWebTinkerServiceProvider extends ServiceProvider
 
     protected function registerRoutes()
     {
-        //        Route::group($this->routeConfiguration(), function () {
-        //            Route::get('/', [WebTinkerController::class, 'index']);
-        //            Route::post('/', [WebTinkerController::class, 'execute']);
-        //        });
-
         Route::group($this->routeConfiguration(), function () {
-            Route::get('/', function () {
-                return view('web-tinker::web-tinker');
-            });
+            Route::get('/', [WebTinkerController::class, 'index']);
+            Route::post('/', [WebTinkerController::class, 'execute']);
         });
 
         return $this;
