@@ -17,5 +17,5 @@ export default function HashIcon(props: React.SVGProps<SVGSVGElement>) {
             <line x1="10" x2="8" y1="3" y2="21" />
             <line x1="16" x2="14" y1="3" y2="21" />
         </svg>
-    )
+    );
 }
