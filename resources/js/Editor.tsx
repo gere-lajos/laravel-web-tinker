@@ -7,18 +7,63 @@ import { php } from "@codemirror/lang-php";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { historyField } from "@codemirror/commands";
 import axios from "axios";
-import { useState } from "react";
+import React, { useState } from "react";
 import parse from "html-react-parser";
+import TrashIcon from "./components/icons/TrashIcon";
 
 const stateFields = { history: historyField };
 const editorStateKey = "editorState";
 const editorValueKey = "editorValue";
+const selectedTabKey = "selectedTab";
 
 export default function Editor({ path }: { path: string }) {
     const [output, setOutput] = useState("");
+    const [tabs, setTabs] = useState(
+        Object.keys(
+            JSON.parse(localStorage.getItem(editorValueKey) || "{}"),
+        ).map(Number),
+    );
+    const [activeTab, setActiveTab] = useState(
+        parseInt(localStorage.getItem(selectedTabKey) || "1"),
+    );
+    const [value, setValue] = useState(tabValueInStorage(activeTab) || "");
 
     const serializedState = localStorage.getItem(editorStateKey);
-    const value = localStorage.getItem(editorValueKey) || "";
+
+    if (tabs.length === 0) {
+        addTab();
+    }
+
+    function tabValueInStorage(
+        tabIndex: number,
+        value: string | null | undefined = undefined,
+    ) {
+        const storedValueString = localStorage.getItem(editorValueKey) || "{}";
+        let storedValue;
+
+        try {
+            storedValue = JSON.parse(storedValueString);
+        } catch (error) {
+            console.error("Error parsing JSON from localStorage:", error);
+            storedValue = {};
+        }
+
+        if (value === undefined) {
+            return storedValue[tabIndex];
+        }
+
+        if (value === null) {
+            delete storedValue[tabIndex];
+        } else {
+            storedValue[tabIndex] = value;
+        }
+
+        try {
+            localStorage.setItem(editorValueKey, JSON.stringify(storedValue));
+        } catch (error) {
+            console.error("Error stringifying JSON for localStorage:", error);
+        }
+    }
 
     function handleKeyDown(event: React.KeyboardEvent) {
         if (event.code === "Enter" && (event.ctrlKey || event.metaKey)) {
@@ -28,7 +73,7 @@ export default function Editor({ path }: { path: string }) {
     }
 
     function sendCurrentCode() {
-        const code = localStorage.getItem(editorValueKey)?.trim();
+        const code = tabValueInStorage(activeTab);
 
         if (code === "") {
             return;
@@ -45,10 +90,32 @@ export default function Editor({ path }: { path: string }) {
     }
 
     function handleChange(value: string, viewUpdate: ViewUpdate) {
-        localStorage.setItem(editorValueKey, value);
+        tabValueInStorage(activeTab, value);
 
         const state = viewUpdate.state.toJSON(stateFields);
-        localStorage.setItem(editorStateKey, JSON.stringify(state));
+        localStorage.setItem(editorStateKey + activeTab, JSON.stringify(state));
+    }
+
+    function addTab() {
+        const tabIndex = tabs.length ? tabs[tabs.length - 1] + 1 : 1;
+        setTabs([...tabs, tabIndex]);
+        selectTab(tabIndex);
+    }
+
+    function selectTab(tabIndex: number) {
+        setActiveTab(tabIndex);
+        setValue(tabValueInStorage(tabIndex));
+        localStorage.setItem(selectedTabKey, tabIndex.toString());
+    }
+
+    function deleteTab(tabIndex: number) {
+        const newTabs = tabs.filter((tab) => tab !== tabIndex);
+        setTabs(newTabs);
+        tabValueInStorage(tabIndex, null);
+
+        if (activeTab === tabIndex) {
+            selectTab(newTabs[newTabs.length - 1]);
+        }
     }
 
     return (
@@ -56,8 +123,8 @@ export default function Editor({ path }: { path: string }) {
             <div className="flex flex-col border-r bg-gray-900 border-gray-800">
                 <div className="flex h-14 items-center justify-between border-b px-4 border-gray-800">
                     <div className="flex items-center gap-2">
-                        <CodeIcon className="h-5 w-5 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-50">
+                        <CodeIcon className="h-5 w-5 mr-2 text-gray-400" />
+                        <span className="text-lg font-medium text-gray-50">
                             Laravel Web Tinker
                         </span>
                     </div>
@@ -74,6 +141,29 @@ export default function Editor({ path }: { path: string }) {
                             <span className="sr-only">Run</span>
                         </Button>
                     </div>
+                </div>
+                <div className="border-b border-gray-800">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab}
+                            className={`py-2 px-4 hover:bg-gray-800 ${tab === activeTab ? "text-white bg-gray-700" : "text-gray-400"}`}
+                            onClick={() => selectTab(tab)}
+                        >
+                            # {tab}{" "}
+                            <button
+                                className="ml-2 text-red-400"
+                                onClick={() => deleteTab(tab)}
+                            >
+                                <TrashIcon className="h-3 w-3 text-gray-400 hover:text-red-400" />
+                            </button>
+                        </button>
+                    ))}
+                    <button
+                        className="py-2 px-4 text-gray-400"
+                        onClick={() => addTab()}
+                    >
+                        +
+                    </button>
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
                     <CodeMirror
@@ -122,7 +212,7 @@ export default function Editor({ path }: { path: string }) {
                         <CardContent className="px-5 py-3 font-mono text-sm">
                             <pre>
                                 <code>
-                                    {parse(output) || (
+                                    {(output && parse(output)) || (
                                         <span className="text-gray-400">
                                             Output will appear here...
                                             <div className="my-6"></div>
