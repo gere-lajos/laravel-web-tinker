@@ -1,6 +1,6 @@
 <?php
 
-namespace Gere Lajos\LaravelWebTinker\Database\Factories;
+namespace GereLajos\LaravelWebTinker\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
