@@ -19,6 +19,12 @@ return [
     'enabled' => env('APP_ENV') === 'local',
 
     /*
+    * This class can modify the output returned by Tinker. You can replace this with
+    * any class that implements \Spatie\WebTinker\OutputModifiers\OutputModifier.
+    */
+    'output_modifier' => \GereLajos\LaravelWebTinker\OutputModifiers\PrefixDateTime::class,
+
+    /*
     * These middleware will be assigned to every WebTinker route, giving you the chance
     * to add your own middlewares to this list or change any of the existing middleware.
     */

@@ -1,9 +1,9 @@
 import Editor from './Editor';
 
-function App() {
+function App({ path}: { path: string}) {
   return (
     <>
-        <Editor />
+        <Editor path={path} />
     </>
   )
 }

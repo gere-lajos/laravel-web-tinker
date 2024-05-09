@@ -4,6 +4,7 @@ namespace GereLajos\LaravelWebTinker;
 
 use GereLajos\LaravelWebTinker\Commands\LaravelWebTinkerInstallCommand;
 use GereLajos\LaravelWebTinker\Controllers\WebTinkerController;
+use GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +28,8 @@ class LaravelWebTinkerServiceProvider extends ServiceProvider
         }
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'web-tinker');
+
+        $this->app->bind(OutputModifier::class, config('web-tinker.output_modifier'));
 
         Route::middlewareGroup('web-tinker', config('web-tinker.middleware', []));
 

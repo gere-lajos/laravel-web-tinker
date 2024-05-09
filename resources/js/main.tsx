@@ -5,6 +5,6 @@ import '../css/index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <App path={document.getElementById('root')?.dataset.path} />
   </React.StrictMode>,
 )
