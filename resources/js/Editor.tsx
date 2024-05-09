@@ -6,13 +6,14 @@ import PlayIcon from "@/components/icons/PlayIcon"
 import CodeMirror from '@uiw/react-codemirror';
 import { php } from '@codemirror/lang-php';
 import {githubDark} from '@uiw/codemirror-theme-github';
+import { historyField } from '@codemirror/commands';
+import { basicSetup} from '@uiw/react-codemirror';
+
+const stateFields = { history: historyField };
 
 export default function Editor() {
-    const [value, setValue] = useState("console.log('hello world!');");
-    const onChange = useCallback((val, viewUpdate) => {
-        console.log('val:', val);
-        setValue(val);
-    }, []);
+    const serializedState = localStorage.getItem('editorState');
+    const value = localStorage.getItem('editorValue') || '';
 
     return (
         <div className="grid min-h-screen w-full grid-cols-[1fr_1fr]">
@@ -30,7 +31,37 @@ export default function Editor() {
                     </div>
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
-                    <CodeMirror value={value} height="100%" theme={githubDark} extensions={[php({  })]} onChange={onChange} className="h-full" />
+                    <CodeMirror
+                        height="100%"
+                        theme={githubDark}
+                        extensions={[php({
+                            plain: true,
+                        })]}
+                        autoFocus={true}
+                        basicSetup={{
+                            allowMultipleSelections: true,
+                            tabSize: 4,
+                            bracketMatching: true,
+                            autocompletion: true,
+                            rectangularSelection: true,
+                            highlightActiveLine: true,
+                        }}
+                        className="h-full"
+                        value={value}
+                        initialState={
+                            serializedState
+                                ? {
+                                    json: JSON.parse(serializedState || ''),
+                                    fields: stateFields,
+                                }
+                                : undefined
+                        }
+                        onChange={(value, viewUpdate) => {
+                            localStorage.setItem('editorValue', value);
+
+                            const state = viewUpdate.state.toJSON(stateFields);
+                            localStorage.setItem('editorState', JSON.stringify(state));
+                        }}/>
                 </div>
             </div>
             <div className="flex flex-col">
