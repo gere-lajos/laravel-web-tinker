@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CardContent, Card } from "@/components/ui/card";
 import CodeIcon from "@/components/icons/CodeIcon";
 import PlayIcon from "@/components/icons/PlayIcon";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { ViewUpdate } from "@uiw/react-codemirror";
 import { php } from "@codemirror/lang-php";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { historyField } from "@codemirror/commands";
@@ -20,6 +20,37 @@ export default function Editor({ path }: { path: string }) {
     const serializedState = localStorage.getItem(editorStateKey);
     const value = localStorage.getItem(editorValueKey) || "";
 
+    function handleKeyDown(event: React.KeyboardEvent) {
+        if (event.code === "Enter" && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            sendCurrentCode();
+        }
+    }
+
+    function sendCurrentCode() {
+        const code = localStorage.getItem(editorValueKey)?.trim();
+
+        if (code === "") {
+            return;
+        }
+
+        axios
+            .post(path, { code })
+            .then((result) => {
+                setOutput(result.data);
+            })
+            .catch((error) => {
+                console.error("Error executing code:", error);
+            });
+    }
+
+    function handleChange(value: string, viewUpdate: ViewUpdate) {
+        localStorage.setItem(editorValueKey, value);
+
+        const state = viewUpdate.state.toJSON(stateFields);
+        localStorage.setItem(editorStateKey, JSON.stringify(state));
+    }
+
     return (
         <div className="grid min-h-screen w-full grid-cols-[1fr_1fr]">
             <div className="flex flex-col border-r bg-gray-900 border-gray-800">
@@ -35,6 +66,9 @@ export default function Editor({ path }: { path: string }) {
                             className="h-8 w-8 hover:bg-gray-800"
                             size="icon"
                             variant="ghost"
+                            onClick={() => {
+                                sendCurrentCode();
+                            }}
                         >
                             <PlayIcon className="h-4 w-4 text-gray-400 hover:text-gray-50" />
                             <span className="sr-only">Run</span>
@@ -43,28 +77,7 @@ export default function Editor({ path }: { path: string }) {
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
                     <CodeMirror
-                        onKeyDown={async (event) => {
-                            if (
-                                event.code === "Enter" &&
-                                (event.ctrlKey || event.metaKey)
-                            ) {
-                                event.preventDefault();
-
-                                const code = localStorage
-                                    .getItem(editorValueKey)
-                                    ?.trim();
-
-                                if (code === "") {
-                                    return;
-                                }
-
-                                const result = await axios.post(path, {
-                                    code,
-                                });
-
-                                setOutput(result.data);
-                            }
-                        }}
+                        onKeyDown={(event) => handleKeyDown(event)}
                         height="100%"
                         theme={githubDark}
                         extensions={[
@@ -92,15 +105,9 @@ export default function Editor({ path }: { path: string }) {
                                   }
                                 : undefined
                         }
-                        onChange={(value, viewUpdate) => {
-                            localStorage.setItem(editorValueKey, value);
-
-                            const state = viewUpdate.state.toJSON(stateFields);
-                            localStorage.setItem(
-                                editorStateKey,
-                                JSON.stringify(state),
-                            );
-                        }}
+                        onChange={(value, viewUpdate) =>
+                            handleChange(value, viewUpdate)
+                        }
                     />
                 </div>
             </div>
