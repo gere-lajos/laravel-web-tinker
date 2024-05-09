@@ -9,7 +9,8 @@ use GereLajos\LaravelWebTinker\LaravelWebTinker;
 
 class WebTinkerController
 {
-    public function index(){
+    public function index()
+    {
         return view('web-tinker::web-tinker');
     }
 

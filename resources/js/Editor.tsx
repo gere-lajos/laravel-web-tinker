@@ -11,12 +11,14 @@ import { useState } from "react";
 import parse from "html-react-parser";
 
 const stateFields = { history: historyField };
+const editorStateKey = "editorState";
+const editorValueKey = "editorValue";
 
 export default function Editor({ path }: { path: string }) {
     const [output, setOutput] = useState("");
 
-    const serializedState = localStorage.getItem("editorState");
-    const value = localStorage.getItem("editorValue") || "";
+    const serializedState = localStorage.getItem(editorStateKey);
+    const value = localStorage.getItem(editorValueKey) || "";
 
     return (
         <div className="grid min-h-screen w-full grid-cols-[1fr_1fr]">
@@ -49,7 +51,7 @@ export default function Editor({ path }: { path: string }) {
                                 event.preventDefault();
 
                                 const code = localStorage
-                                    .getItem("editorValue")
+                                    .getItem(editorValueKey)
                                     ?.trim();
 
                                 if (code === "") {
@@ -91,11 +93,11 @@ export default function Editor({ path }: { path: string }) {
                                 : undefined
                         }
                         onChange={(value, viewUpdate) => {
-                            localStorage.setItem("editorValue", value);
+                            localStorage.setItem(editorValueKey, value);
 
                             const state = viewUpdate.state.toJSON(stateFields);
                             localStorage.setItem(
-                                "editorState",
+                                editorStateKey,
                                 JSON.stringify(state),
                             );
                         }}
