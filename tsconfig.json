@@ -20,6 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+
+      "baseUrl": ".",
+      "paths": {
+          "@/*": ["resources/js/*"]
+      }
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
