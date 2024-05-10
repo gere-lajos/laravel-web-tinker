@@ -13,7 +13,7 @@ This package can run arbitrary code. Unless you know what you are doing, you sho
 
 ## Known issues
 
-- If you run the code with ctrl+enter or cmd3+enter, the editor will also start a new line.
+- If you run the code with ctrl+enter or cmd+enter, the editor will also start a new line.
 - History is shared between tabs, and is not cleared when you close the tab.
 
 ## Installation
