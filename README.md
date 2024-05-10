@@ -11,6 +11,10 @@ This package allows you to use Tinker in your browser. Wildly inspired by Spatie
 
 This package can run arbitrary code. Unless you know what you are doing, you should never install or use this in a production environment, or any environment where you handle real world data.
 
+## Known issues
+
+- If you run the code with ctrl+enter or cmd3+enter, the editor will also start a new line.
+- History is shared between tabs, and is not cleared when you close the tab.
 
 ## Installation
 
