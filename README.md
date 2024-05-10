@@ -33,10 +33,12 @@ php artisan web-tinker:install
 Optionally, you can publish the config file of the package.
 
 ```bash
-php artisan vendor:publish --provider="Spatie\WebTinker\WebTinkerServiceProvider" --tag="config"
+php artisan vendor:publish --provider="GereLajos\LaravelWebTinker\WebTinkerServiceProvider" --tag="config"
 ```
 
 This is the content that will be published to `config/web-tinker.php`
+
+If you previously installed Spatie's Web Tinker, you may have conflicts in the config file. You can safely remove the `web-tinker.php` file from the `config` directory.
 
 ```php
 return [
