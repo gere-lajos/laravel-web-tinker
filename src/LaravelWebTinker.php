@@ -14,13 +14,13 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class LaravelWebTinker
 {
-    /** @var \Symfony\Component\Console\Output\BufferedOutput */
+    /** @var BufferedOutput */
     protected $output;
 
-    /** @var \Psy\Shell */
+    /** @var Shell */
     protected $shell;
 
-    /** @var \GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier */
+    /** @var OutputModifier */
     protected $outputModifier;
 
     public function __construct(OutputModifier $outputModifier)
@@ -112,9 +112,9 @@ class LaravelWebTinker
 
     protected function cleanOutput(string $output): string
     {
-        $output = preg_replace('/(?s)(<aside.*?<\/aside>)|Exit:  Ctrl\+D/ms', '$2', $output);
+        $output = preg_replace('/(?s)(<aside.*?<\/aside>)|Exit: {2}Ctrl\+D/ms', '$2', $output);
 
-        $output = preg_replace('/(?s)(<whisper.*?<\/whisper>)|INFO  Ctrl\+D\./ms', '$2', $output);
+        $output = preg_replace('/(?s)(<whisper.*?<\/whisper>)|INFO {2}Ctrl\+D\./ms', '$2', $output);
 
         return trim($output);
     }
