@@ -8,9 +8,9 @@ class Authorize
 {
     public function handle($request, $next)
     {
-        return $this->allowedToUseTinker()
-            ? $next($request)
-            : abort(403);
+        abort_unless($this->allowedToUseTinker(), 403);
+
+        return $next($request);
     }
 
     protected function allowedToUseTinker(): bool
