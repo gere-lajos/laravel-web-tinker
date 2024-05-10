@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function HashIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
