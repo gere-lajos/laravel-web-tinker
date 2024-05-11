@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CardContent, Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import CodeIcon from "@/components/icons/CodeIcon";
 import PlayIcon from "@/components/icons/PlayIcon";
 import CodeMirror, { ViewUpdate } from "@uiw/react-codemirror";
@@ -10,6 +10,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import parse from "html-react-parser";
 import TrashIcon from "./components/icons/TrashIcon";
+import Splitter, { GutterTheme, SplitDirection } from "@devbookhq/splitter";
 
 const stateFields = { history: historyField };
 const editorStateKey = "editorState";
@@ -119,8 +120,13 @@ export default function Editor({ path }: { path: string }) {
     }
 
     return (
-        <div className="grid min-h-screen w-full grid-cols-[1fr_1fr]">
-            <div className="flex flex-col border-r bg-gray-900 border-gray-800">
+        <Splitter
+            minHeights={[0, 0]}
+            initialSizes={[50, 50]}
+            direction={SplitDirection.Horizontal}
+            gutterClassName={"bg-gray-800 min-h-screen"}
+        >
+            <div className="h-screen flex flex-col border-r bg-gray-900 border-gray-800">
                 <div className="flex h-14 items-center justify-between border-b px-4 border-gray-800">
                     <div className="flex items-center gap-2">
                         <CodeIcon className="h-5 w-5 mr-2 text-gray-400" />
@@ -201,7 +207,7 @@ export default function Editor({ path }: { path: string }) {
                     />
                 </div>
             </div>
-            <div className="flex flex-col">
+            <div className="h-screen flex flex-col">
                 <div className="flex h-14 px-5 items-center justify-between bg-gray-900 border-gray-800">
                     <span className="text-sm font-medium text-gray-50">
                         Output
@@ -228,6 +234,6 @@ export default function Editor({ path }: { path: string }) {
                     </Card>
                 </div>
             </div>
-        </div>
+        </Splitter>
     );
 }
