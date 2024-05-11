@@ -10,7 +10,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import parse from "html-react-parser";
 import TrashIcon from "./components/icons/TrashIcon";
-import Splitter, { GutterTheme, SplitDirection } from "@devbookhq/splitter";
+import Splitter, { SplitDirection } from "@devbookhq/splitter";
 
 const stateFields = { history: historyField };
 const editorStateKey = "editorState";
