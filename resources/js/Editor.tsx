@@ -114,7 +114,6 @@ export default function Editor({ path }: { path: string }) {
         const tabIndex = tabs.length ? tabs[tabs.length - 1] + 1 : 1;
         setTabs([...tabs, tabIndex]);
         selectTab(tabIndex);
-        console.log("addTab", tabIndex);
     }
 
     function selectTab(tabIndex: number) {

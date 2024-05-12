@@ -16,7 +16,6 @@ This package can run arbitrary code. Unless you know what you are doing, you sho
 - If you run the code with ctrl+enter or cmd+enter, the editor will also start a new line.
 - History is shared between tabs, and is not cleared when you close the tab.
 - Big outputs are not handled well, it can push the grid instead of breaking words.
-- The editor-output grid is not resizable.
 - We must validate the stored code structure so it won't break the editor.
 
 ## Installation
