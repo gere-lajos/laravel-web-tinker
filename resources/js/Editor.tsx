@@ -162,27 +162,33 @@ export default function Editor({ path }: { path: string }) {
                         </Button>
                     </div>
                 </div>
-                <div className="border-b border-gray-800">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab}
-                            className={`py-2 px-4 hover:bg-gray-800 ${tab === activeTab ? "text-white bg-gray-700" : "text-gray-400"}`}
-                            onClick={() => selectTab(tab)}
-                        >
-                            # {tab}{" "}
-                            <span
-                                className="inline-flex text-red-400"
-                                onClick={() => deleteTab(tab)}
+                <div className="border-b border-gray-800 flex justify-between">
+                    <div>
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab}
+                                className={`py-2 px-4 hover:bg-gray-800 ${tab === activeTab ? "text-white bg-gray-700" : "text-gray-400"}`}
+                                onClick={() => selectTab(tab)}
                             >
-                                <TrashIcon className="h-3 w-3 text-gray-400 hover:text-red-400" />
-                            </span>
+                                # {tab}{" "}
+                            </button>
+                        ))}
+                        <button
+                            className="py-2 px-4 text-gray-400"
+                            onClick={() => addTab()}
+                        >
+                            +
                         </button>
-                    ))}
+                    </div>
+
                     <button
-                        className="py-2 px-4 text-gray-400"
-                        onClick={() => addTab()}
+                        key="delete"
+                        className={`py-2 px-4 hover:bg-gray-800 text-gray-400`}
                     >
-                        +
+                        <TrashIcon
+                            className="h-3 w-3 text-red-800 hover:text-red-400"
+                            onClick={() => deleteTab(activeTab)}
+                        />
                     </button>
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
