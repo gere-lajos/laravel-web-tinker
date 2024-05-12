@@ -27,12 +27,16 @@ export default function Editor({ path }: { path: string }) {
     const [activeTab, setActiveTab] = useState(
         parseInt(localStorage.getItem(selectedTabKey) || "1"),
     );
-    const [value, setValue] = useState(tabValueInStorage(activeTab) || "");
-    const [state, setState] = useState(tabStateInStorage(activeTab) || "");
+    const [value, setValue] = useState(
+        valueInStorage(editorValueKey, activeTab) || "",
+    );
+    const [state, setState] = useState(
+        valueInStorage(editorStateKey, activeTab),
+    );
 
     useEffect(() => {
-        const nextValue = tabValueInStorage(activeTab);
-        const nextState = tabStateInStorage(activeTab);
+        const nextValue = valueInStorage(editorValueKey, activeTab);
+        const nextState = valueInStorage(editorStateKey, activeTab);
 
         setValue(nextValue || "");
         setState(nextState || "");
@@ -42,11 +46,12 @@ export default function Editor({ path }: { path: string }) {
         addTab();
     }
 
-    function tabValueInStorage(
+    function valueInStorage(
+        storageKey: string,
         tabIndex: number,
         value: string | null | undefined = undefined,
     ) {
-        const storedValueString = localStorage.getItem(editorValueKey) || "{}";
+        const storedValueString = localStorage.getItem(storageKey) || "{}";
         let storedValue;
 
         try {
@@ -67,38 +72,7 @@ export default function Editor({ path }: { path: string }) {
         }
 
         try {
-            localStorage.setItem(editorValueKey, JSON.stringify(storedValue));
-        } catch (error) {
-            console.error("Error stringifying JSON for localStorage:", error);
-        }
-    }
-
-    function tabStateInStorage(
-        tabIndex: number,
-        value: string | null | undefined = undefined,
-    ) {
-        const storedValueString = localStorage.getItem(editorStateKey) || "{}";
-        let storedValue;
-
-        try {
-            storedValue = JSON.parse(storedValueString);
-        } catch (error) {
-            console.error("Error parsing JSON from localStorage:", error);
-            storedValue = {};
-        }
-
-        if (value === undefined) {
-            return storedValue[tabIndex];
-        }
-
-        if (value === null) {
-            delete storedValue[tabIndex];
-        } else {
-            storedValue[tabIndex] = value;
-        }
-
-        try {
-            localStorage.setItem(editorStateKey, JSON.stringify(storedValue));
+            localStorage.setItem(storageKey, JSON.stringify(storedValue));
         } catch (error) {
             console.error("Error stringifying JSON for localStorage:", error);
         }
@@ -112,7 +86,7 @@ export default function Editor({ path }: { path: string }) {
     }
 
     function sendCurrentCode() {
-        const code = tabValueInStorage(activeTab);
+        const code = valueInStorage(editorValueKey, activeTab);
 
         if (code === "") {
             return;
@@ -129,10 +103,10 @@ export default function Editor({ path }: { path: string }) {
     }
 
     function handleChange(value: string, viewUpdate: ViewUpdate) {
-        tabValueInStorage(activeTab, value);
+        valueInStorage(editorValueKey, activeTab, value);
 
         const state = viewUpdate.state.toJSON(stateFields);
-        tabStateInStorage(activeTab, JSON.stringify(state));
+        valueInStorage(editorStateKey, activeTab, JSON.stringify(state));
         setState(JSON.stringify(state));
     }
 
@@ -151,8 +125,8 @@ export default function Editor({ path }: { path: string }) {
     function deleteTab(tabIndex: number) {
         const newTabs = tabs.filter((tab) => tab !== tabIndex);
         setTabs(newTabs);
-        tabValueInStorage(tabIndex, null);
-        tabStateInStorage(tabIndex, null);
+        valueInStorage(editorValueKey, tabIndex, null);
+        valueInStorage(editorStateKey, tabIndex, null);
 
         if (activeTab === tabIndex) {
             selectTab(newTabs[newTabs.length - 1]);
