@@ -7,7 +7,7 @@ import { php } from "@codemirror/lang-php";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { historyField } from "@codemirror/commands";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import TrashIcon from "./components/icons/TrashIcon";
 import Splitter, { SplitDirection } from "@devbookhq/splitter";
@@ -28,8 +28,15 @@ export default function Editor({ path }: { path: string }) {
         parseInt(localStorage.getItem(selectedTabKey) || "1"),
     );
     const [value, setValue] = useState(tabValueInStorage(activeTab) || "");
+    const [state, setState] = useState(tabStateInStorage(activeTab) || "");
 
-    const serializedState = localStorage.getItem(editorStateKey);
+    useEffect(() => {
+        const nextValue = tabValueInStorage(activeTab);
+        const nextState = tabStateInStorage(activeTab);
+
+        setValue(nextValue || "");
+        setState(nextState || "");
+    }, [activeTab]);
 
     if (tabs.length === 0) {
         addTab();
@@ -66,6 +73,37 @@ export default function Editor({ path }: { path: string }) {
         }
     }
 
+    function tabStateInStorage(
+        tabIndex: number,
+        value: string | null | undefined = undefined,
+    ) {
+        const storedValueString = localStorage.getItem(editorStateKey) || "{}";
+        let storedValue;
+
+        try {
+            storedValue = JSON.parse(storedValueString);
+        } catch (error) {
+            console.error("Error parsing JSON from localStorage:", error);
+            storedValue = {};
+        }
+
+        if (value === undefined) {
+            return storedValue[tabIndex];
+        }
+
+        if (value === null) {
+            delete storedValue[tabIndex];
+        } else {
+            storedValue[tabIndex] = value;
+        }
+
+        try {
+            localStorage.setItem(editorStateKey, JSON.stringify(storedValue));
+        } catch (error) {
+            console.error("Error stringifying JSON for localStorage:", error);
+        }
+    }
+
     function handleKeyDown(event: React.KeyboardEvent) {
         if (event.code === "Enter" && (event.ctrlKey || event.metaKey)) {
             event.preventDefault();
@@ -94,18 +132,19 @@ export default function Editor({ path }: { path: string }) {
         tabValueInStorage(activeTab, value);
 
         const state = viewUpdate.state.toJSON(stateFields);
-        localStorage.setItem(editorStateKey + activeTab, JSON.stringify(state));
+        tabStateInStorage(activeTab, JSON.stringify(state));
+        setState(JSON.stringify(state));
     }
 
     function addTab() {
         const tabIndex = tabs.length ? tabs[tabs.length - 1] + 1 : 1;
         setTabs([...tabs, tabIndex]);
         selectTab(tabIndex);
+        console.log("addTab", tabIndex);
     }
 
     function selectTab(tabIndex: number) {
         setActiveTab(tabIndex);
-        setValue(tabValueInStorage(tabIndex));
         localStorage.setItem(selectedTabKey, tabIndex.toString());
     }
 
@@ -113,6 +152,7 @@ export default function Editor({ path }: { path: string }) {
         const newTabs = tabs.filter((tab) => tab !== tabIndex);
         setTabs(newTabs);
         tabValueInStorage(tabIndex, null);
+        tabStateInStorage(tabIndex, null);
 
         if (activeTab === tabIndex) {
             selectTab(newTabs[newTabs.length - 1]);
@@ -156,12 +196,12 @@ export default function Editor({ path }: { path: string }) {
                             onClick={() => selectTab(tab)}
                         >
                             # {tab}{" "}
-                            <button
-                                className="ml-2 text-red-400"
+                            <span
+                                className="inline-flex text-red-400"
                                 onClick={() => deleteTab(tab)}
                             >
                                 <TrashIcon className="h-3 w-3 text-gray-400 hover:text-red-400" />
-                            </button>
+                            </span>
                         </button>
                     ))}
                     <button
@@ -194,9 +234,9 @@ export default function Editor({ path }: { path: string }) {
                         className="h-full"
                         value={value}
                         initialState={
-                            serializedState
+                            state
                                 ? {
-                                      json: JSON.parse(serializedState || ""),
+                                      json: JSON.parse(state || ""),
                                       fields: stateFields,
                                   }
                                 : undefined
