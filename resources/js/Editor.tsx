@@ -38,8 +38,8 @@ export default function Editor({ path }: { path: string }) {
         const nextValue = valueInStorage(editorValueKey, activeTab);
         const nextState = valueInStorage(editorStateKey, activeTab);
 
-        setValue(nextValue || "");
-        setState(nextState || "");
+        setValue(() => nextValue || "");
+        setState(() => nextState || "");
     }, [activeTab]);
 
     if (tabs.length === 0) {
@@ -62,7 +62,7 @@ export default function Editor({ path }: { path: string }) {
         }
 
         if (value === undefined) {
-            return storedValue[tabIndex];
+            return storedValue[tabIndex] || "";
         }
 
         if (value === null) {
@@ -98,7 +98,7 @@ export default function Editor({ path }: { path: string }) {
         axios
             .post(path, { code })
             .then((result) => {
-                setOutput(result.data);
+                setOutput(() => result.data);
             })
             .catch((error) => {
                 console.error("Error executing code:", error);
@@ -114,19 +114,20 @@ export default function Editor({ path }: { path: string }) {
     }
 
     function addTab() {
-        const tabIndex = tabs.length ? tabs[tabs.length - 1] + 1 : 1;
-        setTabs([...tabs, tabIndex]);
-        selectTab(tabIndex);
+        const newTabIndex = (tabs[tabs.length - 1] ?? 0) + 1;
+        setTabs((prevTabs) => [...prevTabs, newTabIndex]);
+        valueInStorage(editorValueKey, newTabIndex, "");
+        selectTab(newTabIndex);
     }
 
     function selectTab(tabIndex: number) {
-        setActiveTab(tabIndex);
+        setActiveTab(() => tabIndex);
         localStorage.setItem(selectedTabKey, tabIndex.toString());
     }
 
     function deleteTab(tabIndex: number) {
         const newTabs = tabs.filter((tab) => tab !== tabIndex);
-        setTabs(newTabs);
+        setTabs(() => newTabs);
         valueInStorage(editorValueKey, tabIndex, null);
         valueInStorage(editorStateKey, tabIndex, null);
 
@@ -182,16 +183,17 @@ export default function Editor({ path }: { path: string }) {
                             +
                         </button>
                     </div>
-
-                    <button
-                        key="delete"
-                        className={`py-2 px-4 hover:bg-gray-800 text-gray-400`}
-                    >
-                        <TrashIcon
-                            className="h-3 w-3 text-red-800 hover:text-red-400"
+                    {tabs.length > 1 && (
+                        <button
+                            key="delete"
+                            className={`py-2 px-4 hover:bg-gray-800 text-gray-400`}
                             onClick={() => deleteTab(activeTab)}
-                        />
-                    </button>
+                        >
+                            <TrashIcon
+                                className="h-3 w-3 text-red-800 hover:text-red-400"
+                            />
+                        </button>
+                    )}
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
                     <CodeMirror
@@ -214,7 +216,7 @@ export default function Editor({ path }: { path: string }) {
                             syntaxHighlighting: true,
                         }}
                         className="h-full"
-                        value={value}
+                        value={valueInStorage(editorValueKey, activeTab)}
                         initialState={
                             state
                                 ? {
