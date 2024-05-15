@@ -11,6 +11,9 @@ import React, { useEffect, useState } from "react";
 import parse from "html-react-parser";
 import TrashIcon from "./components/icons/TrashIcon";
 import Splitter, { SplitDirection } from "@devbookhq/splitter";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { randomBytes } from "node:crypto";
 
 const stateFields = { history: historyField };
 const editorStateKey = "editorState";
@@ -161,6 +164,16 @@ export default function Editor({ path }: { path: string }) {
         }
     }
 
+    function generateRandomArray() {
+        // Generate a random length between 3 and 7
+        const length = Math.floor(Math.random() * (7 - 3 + 1) + 3);
+
+        // Create an array of the calculated length and fill it with random numbers
+        const randomArray = Array.from({ length }, () => Math.random());
+
+        return randomArray;
+    }
+
     return (
         <Splitter
             minHeights={[0, 0]}
@@ -283,7 +296,18 @@ export default function Editor({ path }: { path: string }) {
                             <pre>
                                 <code>
                                     {loading ? (
-                                        <span>Waiting for response...</span>
+                                        <>
+                                            {output.split("<br>").map(() => (
+                                                <Skeleton
+                                                    baseColor={"#111827"}
+                                                    highlightColor={"#28395c"}
+                                                    enableAnimation={true}
+                                                    width={`${Math.floor(
+                                                        Math.random() * 70 + 30,
+                                                    )}%`}
+                                                />
+                                            ))}
+                                        </>
                                     ) : (
                                         (output && parse(output)) || (
                                             <span className="text-gray-400">
