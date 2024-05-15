@@ -33,6 +33,8 @@ export default function Editor({ path }: { path: string }) {
     const [state, setState] = useState(
         valueInStorage(editorStateKey, activeTab),
     );
+    const [editableTab, setEditableTab] = useState<number|null>(null);
+    const [tempTabName, setTempTabName] = useState("");
 
     useEffect(() => {
         const nextValue = valueInStorage(editorValueKey, activeTab);
@@ -44,6 +46,23 @@ export default function Editor({ path }: { path: string }) {
 
     if (tabs.length === 0) {
         addTab();
+    }
+
+    function handleDoubleClick(tabIndex: number) {
+        setEditableTab(tabIndex);
+        setTempTabName(`${tabIndex}`);
+    }
+
+    function handleNameChange(event: React.KeyboardEvent) {
+        if (event.key === "Enter") {
+            setEditableTab(null);
+
+            console.log(tempTabName);
+        }
+
+        if (event.key === "Escape") {
+            setEditableTab(null);
+        }
     }
 
     function valueInStorage(
@@ -168,13 +187,26 @@ export default function Editor({ path }: { path: string }) {
                 <div className="border-b border-gray-800 flex justify-between">
                     <div>
                         {tabs.map((tab) => (
-                            <button
-                                key={tab}
-                                className={`py-2 px-4 hover:bg-gray-800 ${tab === activeTab ? "text-white bg-gray-700" : "text-gray-400"}`}
-                                onClick={() => selectTab(tab)}
-                            >
-                                # {tab}{" "}
-                            </button>
+                            editableTab === tab ? (
+                                <input
+                                    type="text"
+                                    value={tempTabName}
+                                    onChange={(e) => setTempTabName(e.target.value)}
+                                    onKeyDownCapture={handleNameChange}
+                                    onBlur={() => setEditableTab(null)}
+                                    autoFocus
+                                    className="py-2 px-4 text-white bg-gray-700"
+                                />
+                            ) : (
+                                <button
+                                    key={tab}
+                                    className={`py-2 px-4 hover:bg-gray-800 ${tab === activeTab ? "text-white bg-gray-700" : "text-gray-400"}`}
+                                    onClick={() => selectTab(tab)}
+                                    onDoubleClick={() => handleDoubleClick(tab)}
+                                >
+                                    {tab}
+                                </button>
+                            )
                         ))}
                         <button
                             className="py-2 px-4 text-gray-400"
