@@ -1,5 +1,5 @@
 # NOTE
-We have transitioned the ongoing development of this project to a new repository. You can access it at Luminarix/LaravelWebTinker. Please note that this current repository will no longer receive updates.
+We have transitioned the ongoing development of this project to a new repository. You can access it at [luminarix/laravel-web-tinker](https://github.com/luminarix/laravel-web-tinker). Please note that this current repository will no longer receive updates.
 
 # Small Laravel package to use Tinker in your browser
 
