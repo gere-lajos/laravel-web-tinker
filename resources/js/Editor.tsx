@@ -229,6 +229,7 @@ export default function Editor({ path }: { path: string }) {
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
                     <CodeMirror
+                        key={activeTab}
                         onKeyDownCapture={(event) => handleKeyDown(event)}
                         height="100%"
                         theme={githubDark}
