@@ -81,7 +81,10 @@ export default function Editor({ path }: { path: string }) {
     function handleKeyDown(event: React.KeyboardEvent) {
         if (event.code === "Enter" && (event.ctrlKey || event.metaKey)) {
             event.preventDefault();
+            event.stopPropagation();
             sendCurrentCode();
+
+            return false;
         }
     }
 
@@ -192,7 +195,7 @@ export default function Editor({ path }: { path: string }) {
                 </div>
                 <div className="flex-1 overflow-auto text-gray-400">
                     <CodeMirror
-                        onKeyDown={(event) => handleKeyDown(event)}
+                        onKeyDownCapture={(event) => handleKeyDown(event)}
                         height="100%"
                         theme={githubDark}
                         extensions={[
