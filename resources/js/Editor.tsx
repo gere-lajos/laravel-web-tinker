@@ -15,6 +15,7 @@ import Splitter, { SplitDirection } from "@devbookhq/splitter";
 const stateFields = { history: historyField };
 const editorStateKey = "editorState";
 const editorValueKey = "editorValue";
+const editorTabNameKey = "editorTabName";
 const selectedTabKey = "selectedTab";
 
 export default function Editor({ path }: { path: string }) {
@@ -27,9 +28,6 @@ export default function Editor({ path }: { path: string }) {
     const [activeTab, setActiveTab] = useState(
         parseInt(localStorage.getItem(selectedTabKey) || "1"),
     );
-    const [value, setValue] = useState(
-        valueInStorage(editorValueKey, activeTab) || "",
-    );
     const [state, setState] = useState(
         valueInStorage(editorStateKey, activeTab),
     );
@@ -37,10 +35,8 @@ export default function Editor({ path }: { path: string }) {
     const [tempTabName, setTempTabName] = useState("");
 
     useEffect(() => {
-        const nextValue = valueInStorage(editorValueKey, activeTab);
         const nextState = valueInStorage(editorStateKey, activeTab);
 
-        setValue(() => nextValue || "");
         setState(() => nextState || "");
     }, [activeTab]);
 
@@ -50,14 +46,14 @@ export default function Editor({ path }: { path: string }) {
 
     function handleDoubleClick(tabIndex: number) {
         setEditableTab(tabIndex);
-        setTempTabName(`${tabIndex}`);
+        setTempTabName(valueInStorage(editorTabNameKey, tabIndex) === "" ? `${tabIndex}` : valueInStorage(editorTabNameKey, tabIndex));
     }
 
     function handleNameChange(event: React.KeyboardEvent) {
         if (event.key === "Enter") {
             setEditableTab(null);
 
-            console.log(tempTabName);
+            valueInStorage(editorTabNameKey, editableTab!, tempTabName);
         }
 
         if (event.key === "Escape") {
@@ -204,7 +200,7 @@ export default function Editor({ path }: { path: string }) {
                                     onClick={() => selectTab(tab)}
                                     onDoubleClick={() => handleDoubleClick(tab)}
                                 >
-                                    {tab}
+                                    {valueInStorage(editorTabNameKey, tab) || tab}
                                 </button>
                             )
                         ))}
