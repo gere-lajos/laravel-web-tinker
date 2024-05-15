@@ -31,8 +31,9 @@ export default function Editor({ path }: { path: string }) {
     const [state, setState] = useState(
         valueInStorage(editorStateKey, activeTab),
     );
-    const [editableTab, setEditableTab] = useState<number|null>(null);
+    const [editableTab, setEditableTab] = useState<number | null>(null);
     const [tempTabName, setTempTabName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const nextState = valueInStorage(editorStateKey, activeTab);
@@ -46,7 +47,11 @@ export default function Editor({ path }: { path: string }) {
 
     function handleDoubleClick(tabIndex: number) {
         setEditableTab(tabIndex);
-        setTempTabName(valueInStorage(editorTabNameKey, tabIndex) === "" ? `${tabIndex}` : valueInStorage(editorTabNameKey, tabIndex));
+        setTempTabName(
+            valueInStorage(editorTabNameKey, tabIndex) === ""
+                ? `${tabIndex}`
+                : valueInStorage(editorTabNameKey, tabIndex),
+        );
     }
 
     function handleNameChange(event: React.KeyboardEvent) {
@@ -110,6 +115,8 @@ export default function Editor({ path }: { path: string }) {
             return;
         }
 
+        setLoading(true);
+
         axios
             .post(path, { code })
             .then((result) => {
@@ -117,6 +124,9 @@ export default function Editor({ path }: { path: string }) {
             })
             .catch((error) => {
                 console.error("Error executing code:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -182,12 +192,14 @@ export default function Editor({ path }: { path: string }) {
                 </div>
                 <div className="border-b border-gray-800 flex justify-between">
                     <div>
-                        {tabs.map((tab) => (
+                        {tabs.map((tab) =>
                             editableTab === tab ? (
                                 <input
                                     type="text"
                                     value={tempTabName}
-                                    onChange={(e) => setTempTabName(e.target.value)}
+                                    onChange={(e) =>
+                                        setTempTabName(e.target.value)
+                                    }
                                     onKeyDownCapture={handleNameChange}
                                     onBlur={() => setEditableTab(null)}
                                     autoFocus
@@ -200,10 +212,11 @@ export default function Editor({ path }: { path: string }) {
                                     onClick={() => selectTab(tab)}
                                     onDoubleClick={() => handleDoubleClick(tab)}
                                 >
-                                    {valueInStorage(editorTabNameKey, tab) || tab}
+                                    {valueInStorage(editorTabNameKey, tab) ||
+                                        tab}
                                 </button>
-                            )
-                        ))}
+                            ),
+                        )}
                         <button
                             className="py-2 px-4 text-gray-400"
                             onClick={() => addTab()}
@@ -217,9 +230,7 @@ export default function Editor({ path }: { path: string }) {
                             className={`py-2 px-4 hover:bg-gray-800 text-gray-400`}
                             onClick={() => deleteTab(activeTab)}
                         >
-                            <TrashIcon
-                                className="h-3 w-3 text-red-800 hover:text-red-400"
-                            />
+                            <TrashIcon className="h-3 w-3 text-red-800 hover:text-red-400" />
                         </button>
                     )}
                 </div>
@@ -271,15 +282,19 @@ export default function Editor({ path }: { path: string }) {
                         <CardContent className="px-5 py-3 font-mono text-sm">
                             <pre>
                                 <code>
-                                    {(output && parse(output)) || (
-                                        <span className="text-gray-400">
-                                            Output will appear here...
-                                            <div className="my-6"></div>
-                                            You can press{" "}
-                                            <kbd>Ctrl + Enter</kbd> or{" "}
-                                            <kbd>Cmd + Enter</kbd> to run the
-                                            code.
-                                        </span>
+                                    {loading ? (
+                                        <span>Waiting for response...</span>
+                                    ) : (
+                                        (output && parse(output)) || (
+                                            <span className="text-gray-400">
+                                                Output will appear here...
+                                                <div className="my-6"></div>
+                                                You can press{" "}
+                                                <kbd>Ctrl + Enter</kbd> or{" "}
+                                                <kbd>Cmd + Enter</kbd> to run
+                                                the code.
+                                            </span>
+                                        )
                                     )}
                                 </code>
                             </pre>

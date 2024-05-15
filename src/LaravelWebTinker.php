@@ -5,6 +5,7 @@ namespace GereLajos\LaravelWebTinker;
 use GereLajos\LaravelWebTinker\OutputModifiers\OutputModifier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Collection;
 use Laravel\Tinker\ClassAliasAutoloader;
 use Psy\Configuration;
@@ -40,11 +41,10 @@ class LaravelWebTinker
 
         $closure = new ExecutionLoopClosure($this->shell);
 
-        $closure->execute();
-
+        $runtime = Benchmark::measure(fn () => $closure->execute());
         $output = $this->cleanOutput($this->output->fetch());
 
-        return $this->outputModifier->modify($output);
+        return $this->outputModifier->modify($output, $runtime);
     }
 
     protected function createShell(BufferedOutput $output): Shell
