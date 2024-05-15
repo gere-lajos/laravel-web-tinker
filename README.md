@@ -1,3 +1,6 @@
+# NOTE
+We have transitioned the ongoing development of this project to a new repository. You can access it at Luminarix/LaravelWebTinker. Please note that this current repository will no longer receive updates.
+
 # Small Laravel package to use Tinker in your browser
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/gere-lajos/laravel-web-tinker.svg?style=flat-square)](https://packagist.org/packages/gere-lajos/laravel-web-tinker)
